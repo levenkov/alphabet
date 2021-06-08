@@ -1,0 +1,30 @@
+name: BuildOnMacOS
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3
+      - name: Setup Conan
+        run: |
+          python3 -m pip install conan
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          conan install ..
+          conan build -bf . -sf .. ..
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: abc-${{ steps.git_describe.outputs.value }}
+          path: build/bin/abc
