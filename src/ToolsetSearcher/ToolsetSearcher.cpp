@@ -5,8 +5,8 @@
 #include <boost/range/numeric.hpp>
 
 #include <Toolset/Toolset.h>
-#include <aux/platform_detector.h>
-#include <aux/vector.h>
+#include <auxilary/platform_detector.h>
+#include <auxilary/vector.h>
 
 #include "ToolsetSearcher.h"
 
