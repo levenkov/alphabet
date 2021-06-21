@@ -1,7 +1,7 @@
 from conans import ConanFile, CMake
 
 class AbcConan(ConanFile):
-    generators = "cmake"
+    generators = "cmake", "cmake_find_package"
 
     requires = "boost/1.76.0"
 
