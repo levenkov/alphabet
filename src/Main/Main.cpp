@@ -34,25 +34,24 @@ int Main::runDirectMode(const vector<string> arguments) {
 
 int Main::runMediatorMode(const string programName, const vector<string> arguments) {
     // TODO: CommandContext commandContext;
-    ToolsetSearcher searcher(programName, arguments);
+    ToolsetSearcher searcher(programName);
 
-    for(auto toolset: searcher.search()) {
-        for(auto tool: toolset.tools()) {
+    for (auto toolset: searcher.search()) {
+        for (auto tool: toolset.tools()) {
             ProbingResult probingResult = tool.probe(arguments);
 
-            if(probingResult.isFailed())
+            if (probingResult.isFailed())
                 continue;
 
             // TODO: auto mediationContext = commandContext.prepareMediationContext();
 
             MediationResult mediationResult = tool.execute();
 
-            if (
-                mediationResult == MediationResult::kFailed ||
-                mediationResult == MediationResult::kSuccessAndFinal
-            ) {
+            if (probingResult.isFailed())
                 return mediationResult.exitCode();
-            }
+
+            if (probingResult == MediationResult::kSuccessAndFinal)
+                return 0;
         }
     }
 

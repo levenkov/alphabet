@@ -16,7 +16,7 @@ public:
     ExecutionResult(ResultCode code) : m_code(code) { }
     ExecutionResult(int code) : m_code(fromIntegerCode(code)) { }
 
-    int exitCode() const {
+    virtual int exitCode() const {
         return toIntegerCode(m_code);
     }
 

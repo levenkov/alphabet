@@ -2,11 +2,21 @@ cmake_minimum_required(VERSION 3.13.4 FATAL_ERROR)
 
 project(abc)
 
+if(WIN32)
+    add_compile_definitions(__WINDOWS__)
+elseif(APPLE)
+    add_compile_definitions(__MACOS__)
+elseif(LINUX)
+    add_compile_definitions(__LINUX__)
+else()
+    message(FATAL_ERROR "Unexpected OS")
+endif()
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 
 conan_basic_setup()
 
-find_package(Boost COMPONENTS range filesystem REQUIRED)
+find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(Threads REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
