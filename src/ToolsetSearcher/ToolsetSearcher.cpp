@@ -57,10 +57,41 @@ vector<Toolset> ToolsetSearcher::search()
 
 vector<path> ToolsetSearcher::toolsetPaths()
 {
-    return vector<path>{
-        toolsetsPath(systemLibPath()),
-        toolsetsPath(userLibPath())
-    };
+    return copy_range<vector<path>>(
+        (
+            vector<path>{
+                toolsetsPath(systemLibPath()),
+                toolsetsPath(userLibPath())
+            } + (
+                currentWorkingDirectoryAndParentsToolsetPaths()
+            )
+        ) | (
+            uniqued
+        )
+    );
+}
+
+vector<path> ToolsetSearcher::currentWorkingDirectoryAndParentsToolsetPaths()
+{
+    return collectToolsetPathsFromSpecifiedRecursively(vector<path>(), currentWorkingDirectory());
+}
+
+vector<path> ToolsetSearcher::collectToolsetPathsFromSpecifiedRecursively(
+    const vector<path>& initialPaths,
+    const path& path
+)
+{
+    auto result = initialPaths;
+    auto parentPath = path.parent_path();
+    auto toolsetsPathInCurrentDir = toolsetsPath(regularDirLibPath(path));
+
+    if (is_directory(toolsetsPathInCurrentDir))
+        result.push_back(toolsetsPathInCurrentDir);
+
+    if (parentPath != filesystem::path())
+        result = collectToolsetPathsFromSpecifiedRecursively(result, parentPath);
+
+    return result;
 }
 
 path ToolsetSearcher::toolsetsPath(const path& basePath)
@@ -84,7 +115,17 @@ path ToolsetSearcher::userLibPath()
     return userHomePath() / ".local" / "lib" / "alphabet";
 }
 
+path ToolsetSearcher::regularDirLibPath(const path& regularDir)
+{
+    return regularDir / ".alphabet";
+}
+
 path ToolsetSearcher::userHomePath()
 {
     return getenv("HOME");
+}
+
+path ToolsetSearcher::currentWorkingDirectory()
+{
+    return getenv("PWD");
 }
